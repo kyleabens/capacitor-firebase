@@ -71,15 +71,6 @@ public class FirebaseAuthenticationPlugin: CAPPlugin {
     }
 
     @objc func signInWithPhoneNumber(_ call: CAPPluginCall) {
-        let phoneNumber = call.getString("phoneNumber")
-        let verificationId = call.getString("verificationId")
-        let verificationCode = call.getString("verificationCode")
-
-        if phoneNumber == nil && (verificationId == nil || verificationCode == nil) {
-            call.reject(errorPhoneNumberVerificationIdCodeMissing)
-            return
-        }
-
         implementation?.signInWithPhoneNumber(call)
     }
 
