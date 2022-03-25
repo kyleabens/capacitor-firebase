@@ -171,6 +171,8 @@ export interface SignInCustomParameter {
 }
 
 export interface SignInWithPhoneNumberOptions {
+  email?: string;
+  password?: string;
   /**
    * The phone number to be verified.
    */
