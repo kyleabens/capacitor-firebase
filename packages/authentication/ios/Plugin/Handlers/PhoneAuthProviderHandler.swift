@@ -12,15 +12,34 @@ class PhoneAuthProviderHandler: NSObject {
     }
 
     func signIn(call: CAPPluginCall) {
-        let phoneNumber = call.getString("phoneNumber")
-        let verificationId = call.getString("verificationId")
-        let verificationCode = call.getString("verificationCode")
-
-        if verificationCode == nil {
-            verifyPhoneNumber(call, phoneNumber)
-        } else {
-            handleVerificationCode(call, verificationId, verificationCode)
+        let email = call.getString("email")!;
+        let password = call.getString("password")!;
+        
+        Auth.auth().signIn(withEmail: email,
+                           password: password) { (result, error) in
+          let authError = error as NSError?
+          if (authError == nil || authError!.code != AuthErrorCode.secondFactorRequired.rawValue) {
+            // User is not enrolled with a second factor and is successfully signed in.
+            // ...
+          } else {
+            let resolver = authError!.userInfo[AuthErrorUserInfoMultiFactorResolverKey] as! MultiFactorResolver
+            // Ask user which second factor to use.
+            let hint = resolver.hints[0] as! PhoneMultiFactorInfo
+            // Send SMS verification code
+            PhoneAuthProvider.provider().verifyPhoneNumber(
+              with: hint,
+              uiDelegate: nil,
+              multiFactorSession: resolver.session) { (verificationId, error) in
+                if error != nil {
+                  // Failed to verify phone number.
+                }
+                  var result = FirebaseAuthenticationHelper.createSignInResult(credential: nil, user: nil, idToken: nil, nonce: nil)
+                  result["verificationId"] = verificationId
+                  call.resolve(result)
+            }
+          }
         }
+    
     }
 
     private func verifyPhoneNumber(_ call: CAPPluginCall, _ phoneNumber: String?) {
