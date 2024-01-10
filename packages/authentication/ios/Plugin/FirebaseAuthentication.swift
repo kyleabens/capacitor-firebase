@@ -378,8 +378,8 @@ public typealias AuthStateChangedObserver = () -> Void
         self.oAuthProviderHandler?.signIn(call: call, providerId: ProviderId.microsoft)
     }
 
-    @objc func signInWithPhoneNumber(_ options: SignInWithPhoneNumberOptions) {
-        self.phoneAuthProviderHandler?.signIn(options)
+    @objc func signInWithPhoneNumber(_ call: CAPPluginCall) {
+        self.phoneAuthProviderHandler?.signIn(call: call)
     }
 
     @objc func signInWithTwitter(_ call: CAPPluginCall) {
