@@ -133,7 +133,7 @@ public class FirebaseAuthenticationPlugin: CAPPlugin {
         let user = implementation?.getCurrentUser()
         let userResult = FirebaseAuthenticationHelper.createUserResult(user)
         var result = JSObject()
-        result["user"] = userResult ?? NSNull()
+        result["user"] = userResult
         call.resolve(result)
     }
 
@@ -158,10 +158,8 @@ public class FirebaseAuthenticationPlugin: CAPPlugin {
     }
 
     @objc func getTenantId(_ call: CAPPluginCall) {
-        let tenantId = implementation?.getTenantId()
-
         var result = JSObject()
-        result["tenantId"] = tenantId ?? NSNull()
+        result["tenantId"] = implementation?.getTenantId()
         call.resolve(result)
     }
 
@@ -394,15 +392,7 @@ public class FirebaseAuthenticationPlugin: CAPPlugin {
     }
 
     @objc func signInWithPhoneNumber(_ call: CAPPluginCall) {
-        let skipNativeAuth = call.getBool("skipNativeAuth", firebaseAuthenticationConfig().skipNativeAuth)
-        guard let phoneNumber = call.getString("phoneNumber") else {
-            call.reject(errorPhoneNumberMissing)
-            return
-        }
-        let options = SignInWithPhoneNumberOptions(skipNativeAuth: skipNativeAuth, phoneNumber: phoneNumber)
-
-        implementation?.signInWithPhoneNumber(options)
-        call.resolve()
+        implementation?.signInWithPhoneNumber(call)
     }
 
     @objc func signInWithPlayGames(_ call: CAPPluginCall) {
@@ -440,7 +430,7 @@ public class FirebaseAuthenticationPlugin: CAPPlugin {
             }
             let userResult = FirebaseAuthenticationHelper.createUserResult(user)
             var result = JSObject()
-            result["user"] = userResult ?? NSNull()
+            result["user"] = userResult
             call.resolve(result)
         })
     }
@@ -527,7 +517,7 @@ public class FirebaseAuthenticationPlugin: CAPPlugin {
         let user = implementation?.getCurrentUser()
         let userResult = FirebaseAuthenticationHelper.createUserResult(user)
         var result = JSObject()
-        result["user"] = userResult ?? NSNull()
+        result["user"] = userResult
         notifyListeners(authStateChangeEvent, data: result, retainUntilConsumed: true)
     }
 
